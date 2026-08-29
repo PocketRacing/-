@@ -1,0 +1,1170 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no">
+<title>БРАТЬЯ ПО ОРУЖИЮ</title>
+
+<style>
+*{
+  box-sizing:border-box;
+  -webkit-tap-highlight-color:transparent;
+}
+
+html,body{
+  margin:0;
+  width:100%;
+  height:100%;
+  overflow:hidden;
+  background:#111;
+  color:#eee;
+  font-family:Arial,sans-serif;
+}
+
+#game{
+  position:relative;
+  width:100vw;
+  height:100vh;
+  overflow:hidden;
+  background:#263321;
+}
+
+canvas{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  touch-action:none;
+}
+
+/* Верхняя панель */
+
+#top{
+  position:absolute;
+  top:0;
+  left:0;
+  right:0;
+  height:68px;
+  padding:10px 14px;
+  background:linear-gradient(#111d,#111a00);
+  border-bottom:1px solid #ffffff22;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  pointer-events:none;
+}
+
+.title{
+  font-weight:900;
+  letter-spacing:2px;
+  font-size:17px;
+}
+
+.objective{
+  margin-top:4px;
+  color:#cdbb79;
+  font-size:12px;
+}
+
+#timer{
+  font-weight:bold;
+  font-size:17px;
+}
+
+/* Нижняя панель */
+
+#bottom{
+  position:absolute;
+  left:0;
+  right:0;
+  bottom:0;
+  min-height:105px;
+  padding:8px;
+  background:linear-gradient(transparent,#080b08 18%);
+}
+
+#squad{
+  display:flex;
+  gap:6px;
+  overflow-x:auto;
+  padding-bottom:6px;
+}
+
+.soldierCard{
+  min-width:105px;
+  background:#172017e8;
+  border:1px solid #ffffff25;
+  border-radius:7px;
+  padding:6px;
+  cursor:pointer;
+}
+
+.soldierCard.selected{
+  border-color:#d5bd65;
+  box-shadow:0 0 10px #d5bd6533;
+}
+
+.soldierName{
+  font-size:12px;
+  font-weight:bold;
+}
+
+.soldierWeapon{
+  font-size:10px;
+  color:#aaa;
+  margin:2px 0;
+}
+
+.hp{
+  height:5px;
+  background:#421b1b;
+  border-radius:5px;
+  overflow:hidden;
+}
+
+.hp i{
+  display:block;
+  height:100%;
+  background:#71934e;
+}
+
+#buttons{
+  display:flex;
+  gap:6px;
+  justify-content:center;
+}
+
+button{
+  border:1px solid #ffffff30;
+  background:#202b20;
+  color:#eee;
+  border-radius:6px;
+  padding:10px 12px;
+  font-weight:bold;
+  font-size:11px;
+}
+
+button:active{
+  transform:scale(.96);
+}
+
+button.active{
+  background:#675a2e;
+}
+
+/* Сообщения */
+
+#message{
+  position:absolute;
+  top:78px;
+  left:50%;
+  transform:translateX(-50%);
+  padding:9px 15px;
+  background:#101510dd;
+  border:1px solid #ffffff22;
+  border-radius:5px;
+  font-size:12px;
+  opacity:0;
+  transition:.25s;
+  pointer-events:none;
+}
+
+#message.show{
+  opacity:1;
+}
+
+/* Прицел */
+
+#crosshair{
+  position:absolute;
+  width:24px;
+  height:24px;
+  border:1px solid #fff9;
+  border-radius:50%;
+  transform:translate(-50%,-50%);
+  pointer-events:none;
+  display:none;
+}
+
+#crosshair:before,
+#crosshair:after{
+  content:"";
+  position:absolute;
+  background:#fff9;
+}
+
+#crosshair:before{
+  width:34px;
+  height:1px;
+  left:-6px;
+  top:11px;
+}
+
+#crosshair:after{
+  width:1px;
+  height:34px;
+  left:11px;
+  top:-6px;
+}
+
+/* Экран окончания */
+
+#endScreen{
+  position:absolute;
+  inset:0;
+  background:#050805e8;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  z-index:20;
+}
+
+.endBox{
+  width:min(420px,90%);
+  background:#151b15;
+  border:1px solid #ffffff25;
+  padding:30px 20px;
+  border-radius:8px;
+}
+
+.endBox h1{
+  margin:0 0 10px;
+  letter-spacing:2px;
+}
+
+.endBox p{
+  color:#aaa;
+  font-size:13px;
+  line-height:1.5;
+}
+
+#restart{
+  margin-top:10px;
+  width:100%;
+  padding:13px;
+}
+
+/* подсказка */
+
+#hint{
+  position:absolute;
+  left:50%;
+  top:50%;
+  transform:translate(-50%,-50%);
+  background:#0c100ccc;
+  border:1px solid #ffffff20;
+  border-radius:7px;
+  padding:14px 18px;
+  font-size:12px;
+  text-align:center;
+  pointer-events:none;
+  opacity:1;
+  transition:opacity 1s;
+}
+
+#hint.hide{
+  opacity:0;
+}
+</style>
+</head>
+
+<body>
+
+<div id="game">
+
+<canvas id="canvas"></canvas>
+
+<div id="top">
+  <div>
+    <div class="title">БРАТЬЯ ПО ОРУЖИЮ</div>
+    <div class="objective" id="objective">
+      Задача: захватить деревню
+    </div>
+  </div>
+  <div id="timer">00:00</div>
+</div>
+
+<div id="message"></div>
+
+<div id="crosshair"></div>
+
+<div id="hint">
+  Выбери бойца снизу.<br>
+  Нажми на карту — он отправится туда.<br>
+  Выбери «ОГОНЬ» и нажми на врага для стрельбы.
+</div>
+
+<div id="bottom">
+
+  <div id="squad"></div>
+
+  <div id="buttons">
+    <button id="moveBtn" class="active">ДВИЖЕНИЕ</button>
+    <button id="fireBtn">ОГОНЬ</button>
+    <button id="grenadeBtn">ГРАНАТА</button>
+    <button id="coverBtn">УКРЫТИЕ</button>
+  </div>
+
+</div>
+
+<div id="endScreen">
+  <div class="endBox">
+    <h1 id="endTitle">МИССИЯ ЗАВЕРШЕНА</h1>
+    <p id="endText"></p>
+    <button id="restart">НАЧАТЬ ЗАНОВО</button>
+  </div>
+</div>
+
+</div>
+
+<script>
+const canvas=document.getElementById("canvas");
+const ctx=canvas.getContext("2d");
+
+let W=0,H=0;
+let scale=1;
+
+function resize(){
+  W=canvas.width=window.innerWidth;
+  H=canvas.height=window.innerHeight;
+  scale=Math.min(W/1100,H/700);
+}
+window.addEventListener("resize",resize);
+resize();
+
+/* =========================
+   СОСТОЯНИЕ ИГРЫ
+========================= */
+
+let gameOver=false;
+let victory=false;
+let elapsed=0;
+let lastTime=performance.now();
+
+let mode="move";
+let selected=0;
+
+const world={
+  w:1100,
+  h:700
+};
+
+let camera={
+  x:0,
+  y:0
+};
+
+/* =========================
+   СОЛДАТЫ
+========================= */
+
+let soldiers=[
+ {
+  name:"ИВАН",
+  role:"Командир",
+  weapon:"ППШ",
+  x:180,y:470,
+  tx:180,ty:470,
+  hp:100,
+  maxHp:100,
+  speed:105,
+  range:270,
+  damage:20,
+  cooldown:0,
+  alive:true,
+  cover:false,
+  grenades:2
+ },
+ {
+  name:"МИХАИЛ",
+  role:"Стрелок",
+  weapon:"Мосинка",
+  x:135,y:520,
+  tx:135,ty:520,
+  hp:100,
+  maxHp:100,
+  speed:92,
+  range:350,
+  damage:35,
+  cooldown:0,
+  alive:true,
+  cover:false,
+  grenades:1
+ },
+ {
+  name:"АЛЕКСЕЙ",
+  role:"Пулемётчик",
+  weapon:"ДП-27",
+  x:225,y:525,
+  tx:225,ty:525,
+  hp:100,
+  maxHp:100,
+  speed:82,
+  range:310,
+  damage:10,
+  cooldown:0,
+  alive:true,
+  cover:false,
+  grenades:1
+ },
+ {
+  name:"ПЁТР",
+  role:"Гренадер",
+  weapon:"ППШ",
+  x:90,y:475,
+  tx:90,ty:475,
+  hp:100,
+  maxHp:100,
+  speed:98,
+  range:250,
+  damage:22,
+  cooldown:0,
+  alive:true,
+  cover:false,
+  grenades:3
+ },
+ {
+  name:"СЕРГЕЙ",
+  role:"Стрелок",
+  weapon:"Мосинка",
+  x:260,y:480,
+  tx:260,ty:480,
+  hp:100,
+  maxHp:100,
+  speed:92,
+  range:350,
+  damage:35,
+  cooldown:0,
+  alive:true,
+  cover:false,
+  grenades:1
+ },
+ {
+  name:"НИКОЛАЙ",
+  role:"Автоматчик",
+  weapon:"ППШ",
+  x:170,y:550,
+  tx:170,ty:550,
+  hp:100,
+  maxHp:100,
+  speed:105,
+  range:270,
+  damage:18,
+  cooldown:0,
+  alive:true,
+  cover:false,
+  grenades:2
+ }
+];
+
+/* =========================
+   ВРАГИ
+========================= */
+
+let enemies=[
+ {x:820,y:250,hp:100,maxHp:100,alive:true,cooldown:0,type:"rifle"},
+ {x:900,y:300,hp:100,maxHp:100,alive:true,cooldown:0,type:"rifle"},
+ {x:760,y:340,hp:100,maxHp:100,alive:true,cooldown:0,type:"rifle"},
+ {x:940,y:410,hp:100,maxHp:100,alive:true,cooldown:0,type:"mg"},
+ {x:820,y:470,hp:100,maxHp:100,alive:true,cooldown:0,type:"rifle"},
+ {x:700,y:430,hp:100,maxHp:100,alive:true,cooldown:0,type:"rifle"}
+];
+
+/* =========================
+   ОБЪЕКТЫ КАРТЫ
+========================= */
+
+const houses=[
+ {x:500,y:130,w:210,h:135},
+ {x:770,y:120,w:180,h:120},
+ {x:570,y:410,w:190,h:130}
+];
+
+const walls=[
+ {x:350,y:300,w:170,h:22},
+ {x:790,y:360,w:190,h:22},
+ {x:380,y:600,w:230,h:20}
+];
+
+const trees=[
+ [420,100],[460,80],[530,80],
+ [1030,110],[980,80],[1010,160],
+ [350,150],[300,110],
+ [1000,520],[1040,570],[970,610],
+ [450,520],[390,500],[330,550]
+];
+
+/* =========================
+   УТИЛИТЫ
+========================= */
+
+function distance(a,b){
+ return Math.hypot(a.x-b.x,a.y-b.y);
+}
+
+function aliveSoldiers(){
+ return soldiers.filter(s=>s.alive);
+}
+
+function aliveEnemies(){
+ return enemies.filter(e=>e.alive);
+}
+
+function say(text){
+ const el=document.getElementById("message");
+ el.textContent=text;
+ el.classList.add("show");
+ clearTimeout(say.timer);
+ say.timer=setTimeout(()=>el.classList.remove("show"),1800);
+}
+
+function worldPosition(e){
+ const r=canvas.getBoundingClientRect();
+ return {
+  x:(e.clientX-r.left)/W*world.w,
+  y:(e.clientY-r.top)/H*world.h
+ };
+}
+
+/* =========================
+   УПРАВЛЕНИЕ ОТРЯДОМ
+========================= */
+
+function selectSoldier(i){
+ if(!soldiers[i].alive)return;
+ selected=i;
+ updateSquadUI();
+ say(soldiers[i].name+" — "+soldiers[i].role);
+}
+
+function setDestination(x,y){
+ const s=soldiers[selected];
+ if(!s.alive)return;
+
+ s.tx=Math.max(30,Math.min(world.w-30,x));
+ s.ty=Math.max(90,Math.min(world.h-120,y));
+ s.cover=false;
+
+ say(s.name+" движется");
+}
+
+function attackEnemy(enemy){
+ const s=soldiers[selected];
+
+ if(!s.alive)return;
+
+ const d=distance(s,enemy);
+
+ if(d>s.range){
+  say("Цель слишком далеко");
+  return;
+ }
+
+ if(s.cooldown>0)return;
+
+ s.cooldown=s.role==="Пулемётчик"?.22:.65;
+
+ enemy.hp-=s.damage;
+
+ createBullet(s.x,s.y,enemy.x,enemy.y);
+
+ if(enemy.hp<=0){
+  enemy.hp=0;
+  enemy.alive=false;
+  say("Враг уничтожен");
+  checkVictory();
+ }
+}
+
+function throwGrenade(x,y){
+ const s=soldiers[selected];
+
+ if(!s.alive)return;
+
+ if(s.grenades<=0){
+  say("Гранат больше нет");
+  return;
+ }
+
+ s.grenades--;
+
+ explosions.push({
+  x,y,
+  r:5,
+  max:65,
+  life:.5
+ });
+
+ enemies.forEach(e=>{
+  if(e.alive){
+   const d=Math.hypot(e.x-x,e.y-y);
+   if(d<85){
+    e.hp-=75*(1-d/100);
+    if(e.hp<=0){
+     e.hp=0;
+     e.alive=false;
+    }
+   }
+  }
+ });
+
+ say("Граната!");
+ checkVictory();
+}
+
+/* =========================
+   КНОПКИ
+========================= */
+
+function setMode(m){
+ mode=m;
+
+ document.querySelectorAll("#buttons button")
+ .forEach(b=>b.classList.remove("active"));
+
+ if(m==="move"){
+  document.getElementById("moveBtn").classList.add("active");
+ }
+ if(m==="fire"){
+  document.getElementById("fireBtn").classList.add("active");
+ }
+ if(m==="grenade"){
+  document.getElementById("grenadeBtn").classList.add("active");
+ }
+ if(m==="cover"){
+  document.getElementById("coverBtn").classList.add("active");
+ }
+}
+
+document.getElementById("moveBtn").onclick=()=>setMode("move");
+document.getElementById("fireBtn").onclick=()=>setMode("fire");
+document.getElementById("grenadeBtn").onclick=()=>setMode("grenade");
+
+document.getElementById("coverBtn").onclick=()=>{
+ const s=soldiers[selected];
+ if(!s.alive)return;
+
+ s.cover=!s.cover;
+ say(s.cover?"Боец занял укрытие":"Укрытие покинуто");
+};
+
+/* =========================
+   КЛИК ПО КАРТЕ
+========================= */
+
+canvas.addEventListener("pointerdown",e=>{
+ if(gameOver)return;
+
+ const p=worldPosition(e);
+
+ if(mode==="move"){
+  setDestination(p.x,p.y);
+ }
+
+ else if(mode==="grenade"){
+  throwGrenade(p.x,p.y);
+  setMode("move");
+ }
+
+ else if(mode==="cover"){
+  setDestination(p.x,p.y);
+  const s=soldiers[selected];
+  s.cover=true;
+  setMode("move");
+ }
+
+ else if(mode==="fire"){
+  let target=null;
+
+  for(const enemy of enemies){
+   if(!enemy.alive)continue;
+   if(Math.hypot(enemy.x-p.x,enemy.y-p.y)<28){
+    target=enemy;
+    break;
+   }
+  }
+
+  if(target){
+   attackEnemy(target);
+  }else{
+   say("Цель не найдена");
+  }
+});
+
+/* =========================
+   КЛАВИАТУРА
+========================= */
+
+window.addEventListener("keydown",e=>{
+ if(e.key==="1")selectSoldier(0);
+ if(e.key==="2")selectSoldier(1);
+ if(e.key==="3")selectSoldier(2);
+ if(e.key==="4")selectSoldier(3);
+ if(e.key==="5")selectSoldier(4);
+ if(e.key==="6")selectSoldier(5);
+
+ if(e.key.toLowerCase()==="q")setMode("move");
+ if(e.key.toLowerCase()==="f")setMode("fire");
+ if(e.key.toLowerCase()==="g")setMode("grenade");
+});
+
+/* =========================
+   ПУЛИ
+========================= */
+
+let bullets=[];
+
+function createBullet(x,y,tx,ty){
+ bullets.push({
+  x,y,tx,ty,
+  life:.12
+ });
+}
+
+/* =========================
+   ВЗРЫВЫ
+========================= */
+
+let explosions=[];
+
+/* =========================
+   ИИ
+========================= */
+
+function updateEnemies(dt){
+
+ for(const e of enemies){
+
+  if(!e.alive)continue;
+
+  e.cooldown-=dt;
+
+  let target=null;
+  let best=Infinity;
+
+  for(const s of soldiers){
+   if(!s.alive)continue;
+
+   const d=distance(e,s);
+
+   if(d<best){
+    best=d;
+    target=s;
+   }
+  }
+
+  if(!target)continue;
+
+  if(best<330 && e.cooldown<=0){
+
+   e.cooldown=e.type==="mg"?.3:1.2;
+
+   let damage=e.type==="mg"?7:12;
+
+   if(target.cover)damage*=.45;
+
+   target.hp-=damage;
+
+   createBullet(e.x,e.y,target.x,target.y);
+
+   if(target.hp<=0){
+    target.hp=0;
+    target.alive=false;
+    say(target.name+" погиб");
+    selectNextAlive();
+   }
+  }
+ }
+}
+
+function selectNextAlive(){
+ if(soldiers[selected].alive)return;
+
+ const next=soldiers.findIndex(s=>s.alive);
+
+ if(next>=0){
+  selected=next;
+  updateSquadUI();
+ }
+}
+
+/* =========================
+   ДВИЖЕНИЕ
+========================= */
+
+function updateSoldiers(dt){
+
+ for(const s of soldiers){
+
+  if(!s.alive)continue;
+
+  s.cooldown=Math.max(0,s.cooldown-dt);
+
+  const dx=s.tx-s.x;
+  const dy=s.ty-s.y;
+  const d=Math.hypot(dx,dy);
+
+  if(d>3){
+   s.x+=(dx/d)*s.speed*dt;
+   s.y+=(dy/d)*s.speed*dt;
+  }
+ }
+}
+
+/* =========================
+   ПОБЕДА
+========================= */
+
+function checkVictory(){
+
+ if(aliveEnemies().length===0){
+  finishGame(true);
+ }
+}
+
+function checkDefeat(){
+
+ if(aliveSoldiers().length===0){
+  finishGame(false);
+ }
+}
+
+function finishGame(win){
+
+ if(gameOver)return;
+
+ gameOver=true;
+
+ document.getElementById("endScreen").style.display="flex";
+
+ if(win){
+  document.getElementById("endTitle").textContent="МИССИЯ ЗАВЕРШЕНА";
+  document.getElementById("endText").textContent=
+   "Деревня захвачена. Отряд выполнил задачу.";
+ }else{
+  document.getElementById("endTitle").textContent="ОТРЯД УНИЧТОЖЕН";
+  document.getElementById("endText").textContent=
+   "Задание провалено. Попробуйте ещё раз.";
+ }
+}
+
+document.getElementById("restart").onclick=()=>{
+ location.reload();
+};
+
+/* =========================
+   ИНТЕРФЕЙС ОТРЯДА
+========================= */
+
+function updateSquadUI(){
+
+ const box=document.getElementById("squad");
+ box.innerHTML="";
+
+ soldiers.forEach((s,i)=>{
+
+  const card=document.createElement("div");
+
+  card.className="soldierCard"+
+   (i===selected?" selected":"");
+
+  if(!s.alive)card.style.opacity=".35";
+
+  card.innerHTML=`
+   <div class="soldierName">${s.name}</div>
+   <div class="soldierWeapon">${s.role} · ${s.weapon}</div>
+   <div class="hp">
+    <i style="width:${s.hp}%"></i>
+   </div>
+  `;
+
+  card.onclick=()=>selectSoldier(i);
+
+  box.appendChild(card);
+ });
+}
+
+/* =========================
+   КАМЕРА
+========================= */
+
+function updateCamera(){
+
+ const s=soldiers[selected];
+
+ if(!s)return;
+
+ camera.x=s.x-W/(2*scale);
+ camera.y=s.y-H/(2*scale);
+
+ camera.x=Math.max(0,Math.min(world.w-W/scale,camera.x));
+ camera.y=Math.max(0,Math.min(world.h-H/scale,camera.y));
+}
+
+/* =========================
+   РИСОВАНИЕ
+========================= */
+
+function draw(){
+
+ ctx.clearRect(0,0,W,H);
+
+ const sx=W/world.w;
+ const sy=H/world.h;
+
+ ctx.save();
+
+ ctx.scale(sx,sy);
+
+ /* земля */
+
+ ctx.fillStyle="#33422c";
+ ctx.fillRect(0,0,world.w,world.h);
+
+ /* дороги */
+
+ ctx.fillStyle="#665c43";
+
+ ctx.fillRect(0,330,1100,95);
+ ctx.fillRect(670,0,80,700);
+
+ /* грязь */
+
+ ctx.fillStyle="#4c4935";
+
+ for(let i=0;i<35;i++){
+  const x=(i*173)%1100;
+  const y=(i*97)%700;
+  ctx.fillRect(x,y,25,7);
+ }
+
+ /* деревья */
+
+ for(const t of trees){
+  ctx.fillStyle="#172419";
+  ctx.beginPath();
+  ctx.arc(t[0],t[1],24,0,Math.PI*2);
+  ctx.fill();
+
+  ctx.fillStyle="#273b25";
+  ctx.beginPath();
+  ctx.arc(t[0]-7,t[1]-8,19,0,Math.PI*2);
+  ctx.fill();
+ }
+
+ /* дома */
+
+ for(const h of houses){
+
+  ctx.fillStyle="#292a24";
+  ctx.fillRect(h.x,h.y,h.w,h.h);
+
+  ctx.fillStyle="#3b392f";
+  ctx.fillRect(h.x+8,h.y+8,h.w-16,h.h-16);
+
+  ctx.strokeStyle="#171814";
+  ctx.lineWidth=5;
+  ctx.strokeRect(h.x,h.y,h.w,h.h);
+
+  ctx.fillStyle="#181915";
+  ctx.fillRect(h.x+h.w/2-18,h.y+h.h-45,36,45);
+ }
+
+ /* стены */
+
+ for(const w of walls){
+
+  ctx.fillStyle="#77705d";
+  ctx.fillRect(w.x,w.y,w.w,w.h);
+
+  ctx.strokeStyle="#3b392e";
+  ctx.strokeRect(w.x,w.y,w.w,w.h);
+ }
+
+ /* точка назначения */
+
+ const s=soldiers[selected];
+
+ if(s.alive){
+
+  ctx.strokeStyle="#d8c568aa";
+  ctx.setLineDash([6,6]);
+  ctx.beginPath();
+  ctx.moveTo(s.x,s.y);
+  ctx.lineTo(s.tx,s.ty);
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  ctx.strokeStyle="#d8c568";
+  ctx.beginPath();
+  ctx.arc(s.tx,s.ty,8,0,Math.PI*2);
+  ctx.stroke();
+ }
+
+ /* враги */
+
+ for(const e of enemies){
+
+  if(!e.alive)continue;
+
+  ctx.fillStyle="#721f1f";
+
+  ctx.beginPath();
+  ctx.arc(e.x,e.y,14,0,Math.PI*2);
+  ctx.fill();
+
+  ctx.fillStyle="#bd4a42";
+  ctx.fillRect(e.x-17,e.y-23,34,4);
+
+  ctx.fillStyle="#6c9b55";
+  ctx.fillRect(e.x-17,e.y-23,34*(e.hp/e.maxHp),4);
+
+  ctx.fillStyle="#e4b1a5";
+  ctx.fillRect(e.x+10,e.y-3,13,3);
+ }
+
+ /* солдаты */
+
+ soldiers.forEach((s,i)=>{
+
+  if(!s.alive)return;
+
+  ctx.fillStyle=i===selected?"#d5c35f":"#688b58";
+
+  ctx.beginPath();
+  ctx.arc(s.x,s.y,14,0,Math.PI*2);
+  ctx.fill();
+
+  /* каска */
+
+  ctx.fillStyle="#293927";
+  ctx.beginPath();
+  ctx.arc(s.x,s.y-5,9,Math.PI,0);
+  ctx.fill();
+
+  if(s.cover){
+   ctx.strokeStyle="#d5c35f";
+   ctx.lineWidth=2;
+   ctx.beginPath();
+   ctx.arc(s.x,s.y,19,0,Math.PI*2);
+   ctx.stroke();
+  }
+
+  /* здоровье */
+
+  ctx.fillStyle="#321515";
+  ctx.fillRect(s.x-18,s.y-27,36,4);
+
+  ctx.fillStyle="#6f9a54";
+  ctx.fillRect(s.x-18,s.y-27,36*(s.hp/s.maxHp),4);
+
+  /* имя */
+
+  ctx.fillStyle="#eee";
+  ctx.font="bold 11px Arial";
+  ctx.textAlign="center";
+  ctx.fillText(s.name,s.x,s.y+30);
+ });
+
+ /* пули */
+
+ for(const b of bullets){
+
+  ctx.strokeStyle="#e4d8a2";
+  ctx.lineWidth=2;
+
+  ctx.beginPath();
+  ctx.moveTo(b.x,b.y);
+  ctx.lineTo(b.tx,b.ty);
+  ctx.stroke();
+ }
+
+ /* взрывы */
+
+ for(const ex of explosions){
+
+  ctx.fillStyle="#d6a32c88";
+  ctx.beginPath();
+  ctx.arc(ex.x,ex.y,ex.r,0,Math.PI*2);
+  ctx.fill();
+
+  ctx.strokeStyle="#f1d27a";
+  ctx.lineWidth=3;
+  ctx.beginPath();
+  ctx.arc(ex.x,ex.y,ex.r+8,0,Math.PI*2);
+  ctx.stroke();
+ }
+
+ ctx.restore();
+}
+
+/* =========================
+   ТАЙМЕР
+========================= */
+
+function updateTimer(){
+
+ const total=Math.floor(elapsed);
+
+ const min=String(Math.floor(total/60)).padStart(2,"0");
+ const sec=String(total%60).padStart(2,"0");
+
+ document.getElementById("timer").textContent=min+":"+sec;
+}
+
+/* =========================
+   ЦИКЛ
+========================= */
+
+function loop(now){
+
+ const dt=Math.min(.05,(now-lastTime)/1000);
+ lastTime=now;
+
+ if(!gameOver){
+
+  elapsed+=dt;
+
+  updateSoldiers(dt);
+  updateEnemies(dt);
+
+  bullets.forEach(b=>b.life-=dt);
+  bullets=bullets.filter(b=>b.life>0);
+
+  explosions.forEach(e=>{
+   e.life-=dt;
+   e.r+=(e.max-e.r)*dt*10;
+  });
+
+  explosions=explosions.filter(e=>e.life>0);
+
+  checkDefeat();
+  updateCamera();
+  updateTimer();
+
+  if(Math.floor(elapsed*4)%2===0){
+   updateSquadUI();
+  }
+ }
+
+ draw();
+
+ requestAnimationFrame(loop);
+}
+
+/* =========================
+   СТАРТ
+========================= */
+
+updateSquadUI();
+
+setTimeout(()=>{
+ document.getElementById("hint").classList.add("hide");
+},5000);
+
+requestAnimationFrame(loop);
+</script>
+
+</body>
+</html>
