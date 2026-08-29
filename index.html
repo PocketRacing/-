@@ -2,2178 +2,1406 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport"
-content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
 
 <title>БРАТЬЯ ПО ОРУЖИЮ</title>
 
 <style>
 *{
-  box-sizing:border-box;
-  -webkit-tap-highlight-color:transparent;
+    box-sizing:border-box;
+    -webkit-tap-highlight-color:transparent;
 }
 
 html,body{
-  margin:0;
-  padding:0;
-  width:100%;
-  height:100%;
-  overflow:hidden;
-  background:#111;
-  color:#fff;
-  font-family:Arial,Helvetica,sans-serif;
-  touch-action:none;
+    margin:0;
+    padding:0;
+    min-height:100%;
+    background:#090b09;
+    color:#deded6;
+    font-family:Georgia,"Times New Roman",serif;
 }
 
-#game{
-  position:fixed;
-  inset:0;
-  overflow:hidden;
-  background:#293625;
+body{
+    background:
+        radial-gradient(circle at 50% 0%,#263024 0%,#0b0d0b 55%,#050605 100%);
 }
 
-#canvas{
-  position:absolute;
-  inset:0;
-  width:100%;
-  height:100%;
-  z-index:1;
-  display:block;
-  touch-action:none;
+button{
+    font-family:inherit;
 }
 
-/* =========================
-   ВЕРХ
-========================= */
+#app{
+    width:100%;
+    max-width:900px;
+    min-height:100vh;
+    margin:auto;
+    padding:16px;
+}
 
-#top{
-  position:absolute;
-  left:0;
-  right:0;
-  top:0;
-  height:72px;
-  z-index:10;
+/* ===== HEADER ===== */
 
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
+.header{
+    padding:16px 4px 14px;
+    border-bottom:1px solid #45483e;
+    margin-bottom:18px;
+}
 
-  padding:10px 14px;
-
-  background:linear-gradient(
-    to bottom,
-    rgba(8,10,8,.96),
-    rgba(8,10,8,.72),
-    transparent
-  );
-
-  pointer-events:none;
+.eyebrow{
+    color:#9c956f;
+    font-size:11px;
+    letter-spacing:3px;
+    text-transform:uppercase;
 }
 
 .title{
-  font-size:17px;
-  font-weight:900;
-  letter-spacing:2px;
+    margin:7px 0 3px;
+    color:#eee9d7;
+    font-size:29px;
+    font-weight:bold;
+    letter-spacing:2px;
 }
 
-.objective{
-  margin-top:5px;
-  color:#d0bd75;
-  font-size:12px;
+.subtitle{
+    color:#898b82;
+    font-size:13px;
 }
 
-#timer{
-  font-size:17px;
-  font-weight:bold;
+/* ===== STATUS ===== */
+
+.status{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:6px;
+    margin-bottom:15px;
 }
 
-/* =========================
-   СООБЩЕНИЕ
-========================= */
-
-#message{
-  position:absolute;
-  top:82px;
-  left:50%;
-  transform:translateX(-50%);
-
-  z-index:30;
-
-  padding:9px 15px;
-
-  background:rgba(12,15,12,.94);
-  border:1px solid rgba(255,255,255,.15);
-  border-radius:6px;
-
-  font-size:12px;
-  white-space:nowrap;
-
-  opacity:0;
-  transition:.2s;
-
-  pointer-events:none;
+.stat{
+    padding:10px 7px;
+    background:#111511;
+    border:1px solid #30352e;
+    text-align:center;
 }
 
-#message.show{
-  opacity:1;
+.stat b{
+    display:block;
+    color:#c9bd82;
+    font-size:16px;
 }
 
-/* =========================
-   ПОДСКАЗКА
-========================= */
-
-#hint{
-  position:absolute;
-  left:50%;
-  top:48%;
-  transform:translate(-50%,-50%);
-
-  z-index:15;
-
-  width:min(330px,85%);
-  padding:15px;
-
-  text-align:center;
-
-  background:rgba(8,11,8,.9);
-  border:1px solid rgba(255,255,255,.15);
-  border-radius:8px;
-
-  font-size:12px;
-  line-height:1.6;
-
-  pointer-events:none;
-
-  transition:opacity 1s;
+.stat span{
+    display:block;
+    margin-top:3px;
+    color:#777a72;
+    font-size:9px;
+    text-transform:uppercase;
 }
 
-#hint.hide{
-  opacity:0;
+/* ===== STORY ===== */
+
+.story{
+    background:#111411;
+    border:1px solid #34382f;
+    padding:18px;
+    box-shadow:0 12px 35px #0008;
 }
 
-/* =========================
-   НИЖНЯЯ ПАНЕЛЬ
-========================= */
-
-#bottom{
-  position:absolute;
-  left:0;
-  right:0;
-  bottom:0;
-
-  z-index:20;
-
-  padding:8px 8px 10px;
-
-  background:linear-gradient(
-    to bottom,
-    transparent,
-    rgba(5,8,5,.78) 12%,
-    rgba(5,8,5,.97)
-  );
-
-  pointer-events:auto;
+.chapter{
+    color:#aaa06e;
+    font-size:11px;
+    letter-spacing:2px;
+    margin-bottom:8px;
+    text-transform:uppercase;
 }
 
-/* =========================
-   ОТРЯД
-========================= */
-
-#squad{
-  width:100%;
-
-  display:flex;
-  gap:7px;
-
-  overflow-x:auto;
-  overflow-y:hidden;
-
-  padding:16px 2px 7px;
-
-  scrollbar-width:none;
-
-  pointer-events:auto;
+.location{
+    color:#eee8d2;
+    font-size:22px;
+    font-weight:bold;
+    margin-bottom:14px;
 }
 
-#squad::-webkit-scrollbar{
-  display:none;
+.time{
+    color:#777b72;
+    font-size:11px;
+    margin-bottom:17px;
 }
 
-.soldierCard{
-  flex:0 0 108px;
-
-  min-height:59px;
-
-  padding:7px;
-
-  background:#182018;
-  border:1px solid rgba(255,255,255,.16);
-  border-radius:7px;
-
-  cursor:pointer;
-
-  user-select:none;
-  -webkit-user-select:none;
-
-  pointer-events:auto;
+.text{
+    color:#c6c8c0;
+    font-size:15px;
+    line-height:1.75;
+    white-space:pre-line;
 }
 
-.soldierCard.selected{
-  border-color:#d8c46a;
-  box-shadow:0 0 12px rgba(216,196,106,.2);
-  background:#292b1b;
+.dialogue{
+    margin:18px 0;
+    padding:13px 15px;
+    border-left:3px solid #8b8050;
+    background:#171b16;
+    color:#d4d0bc;
+    font-size:14px;
+    line-height:1.6;
 }
 
-.soldierCard.dead{
-  opacity:.32;
-  filter:grayscale(1);
+.dialogue strong{
+    color:#b8aa6c;
 }
 
-.soldierName{
-  font-size:12px;
-  font-weight:bold;
+/* ===== DECISION ===== */
+
+.decisionTitle{
+    margin-top:24px;
+    margin-bottom:10px;
+    color:#aaa06e;
+    font-size:11px;
+    letter-spacing:2px;
+    text-transform:uppercase;
 }
 
-.soldierWeapon{
-  margin-top:2px;
-  color:#aaa;
-  font-size:9px;
+.choice{
+    width:100%;
+    margin:7px 0;
+    padding:14px 15px;
+
+    text-align:left;
+
+    background:#191e19;
+    border:1px solid #383d34;
+    color:#d8d9d1;
+
+    cursor:pointer;
+
+    transition:.15s;
 }
 
-.hp{
-  height:5px;
-  margin-top:6px;
-
-  background:#351919;
-  border-radius:5px;
-
-  overflow:hidden;
+.choice:hover{
+    background:#242a23;
+    border-color:#756c47;
 }
 
-.hp i{
-  display:block;
-  height:100%;
-  background:#719552;
+.choice:active{
+    transform:scale(.985);
+    background:#2c3026;
 }
 
-/* =========================
-   КНОПКИ
-========================= */
-
-#buttons{
-  display:flex;
-  justify-content:center;
-  gap:6px;
-
-  pointer-events:auto;
+.choice .number{
+    display:inline-block;
+    width:25px;
+    color:#a99c64;
+    font-weight:bold;
 }
 
-.actionBtn{
-  flex:1;
-
-  min-width:0;
-
-  padding:12px 5px;
-
-  background:#202920;
-  color:#eee;
-
-  border:1px solid rgba(255,255,255,.16);
-  border-radius:6px;
-
-  font-size:10px;
-  font-weight:bold;
-
-  cursor:pointer;
-
-  user-select:none;
-  -webkit-user-select:none;
-
-  touch-action:manipulation;
-
-  pointer-events:auto;
+.choice .desc{
+    color:#888d83;
+    font-size:11px;
+    display:block;
+    margin:5px 0 0 25px;
+    line-height:1.45;
 }
 
-.actionBtn.active{
-  background:#66592d;
-  border-color:#d1bb60;
+/* ===== LOG ===== */
+
+.log{
+    margin-top:20px;
+    border-top:1px solid #34382f;
+    padding-top:15px;
 }
 
-.actionBtn:active{
-  transform:scale(.96);
+.logTitle{
+    color:#777c73;
+    font-size:10px;
+    letter-spacing:2px;
+    margin-bottom:8px;
 }
 
-/* =========================
-   ЭКРАН КОНЦА
-========================= */
-
-#endScreen{
-  position:absolute;
-  inset:0;
-
-  z-index:100;
-
-  display:none;
-
-  align-items:center;
-  justify-content:center;
-
-  background:rgba(3,5,3,.93);
-
-  padding:20px;
+.logItem{
+    color:#777a73;
+    font-size:11px;
+    padding:4px 0;
 }
 
-.endBox{
-  width:min(420px,100%);
+/* ===== FOOTER ===== */
 
-  padding:28px 20px;
-
-  text-align:center;
-
-  background:#151b15;
-  border:1px solid rgba(255,255,255,.16);
-  border-radius:9px;
+.footer{
+    text-align:center;
+    color:#484c45;
+    font-size:10px;
+    padding:22px 0 10px;
 }
 
-.endBox h1{
-  margin:0 0 10px;
+/* ===== END ===== */
 
-  font-size:22px;
-  letter-spacing:2px;
+.end{
+    display:none;
+    text-align:center;
+    padding:35px 10px;
 }
 
-.endBox p{
-  margin:0 0 20px;
-
-  color:#aaa;
-  font-size:13px;
-  line-height:1.5;
+.end h1{
+    color:#e5dec4;
+    letter-spacing:2px;
 }
 
-#restart{
-  width:100%;
-  padding:13px;
-
-  border:0;
-  border-radius:6px;
-
-  background:#675b30;
-  color:white;
-
-  font-weight:bold;
-  cursor:pointer;
+.end p{
+    color:#92958c;
+    line-height:1.7;
+    font-size:14px;
 }
 
-/* =========================
-   МОБИЛЬНАЯ АДАПТАЦИЯ
-========================= */
+.restart{
+    margin-top:15px;
+    padding:13px 22px;
+    border:1px solid #6e6544;
+    background:#25291f;
+    color:#ddd5b4;
+    cursor:pointer;
+}
+
+/* ===== MOBILE ===== */
 
 @media(max-width:600px){
 
-  #top{
-    height:64px;
-  }
+    #app{
+        padding:11px;
+    }
 
-  .title{
-    font-size:14px;
-  }
+    .title{
+        font-size:23px;
+    }
 
-  .objective{
-    font-size:10px;
-  }
+    .story{
+        padding:14px;
+    }
 
-  #timer{
-    font-size:14px;
-  }
+    .location{
+        font-size:19px;
+    }
 
-  .soldierCard{
-    flex-basis:96px;
-  }
+    .text{
+        font-size:14px;
+        line-height:1.7;
+    }
 
-  .actionBtn{
-    font-size:9px;
-    padding:12px 2px;
-  }
+    .status{
+        grid-template-columns:repeat(2,1fr);
+    }
+
+    .choice{
+        padding:13px 11px;
+    }
 }
 </style>
 </head>
 
 <body>
 
-<div id="game">
+<div id="app">
 
-<canvas id="canvas"></canvas>
-
-<!-- ВЕРХ -->
-<div id="top">
-
-  <div>
-    <div class="title">БРАТЬЯ ПО ОРУЖИЮ</div>
-
-    <div class="objective">
-      Задача: захватить деревню
+    <div class="header">
+        <div class="eyebrow">Тактическая военная история</div>
+        <div class="title">БРАТЬЯ ПО ОРУЖИЮ</div>
+        <div class="subtitle">Один отряд. Одна война. Решения, которые нельзя вернуть.</div>
     </div>
-  </div>
 
-  <div id="timer">
-    00:00
-  </div>
+    <div class="status">
+        <div class="stat">
+            <b id="men">8</b>
+            <span>Бойцов</span>
+        </div>
 
-</div>
+        <div class="stat">
+            <b id="morale">82</b>
+            <span>Мораль</span>
+        </div>
 
-<!-- СООБЩЕНИЯ -->
-<div id="message"></div>
+        <div class="stat">
+            <b id="ammo">74</b>
+            <span>Боеприпасы</span>
+        </div>
 
-<!-- ПОДСКАЗКА -->
-<div id="hint">
-  <b>ПЕРВАЯ ОПЕРАЦИЯ</b><br>
-  Выберите бойца снизу.<br>
-  Нажмите на карту, чтобы отправить его.<br>
-  Для стрельбы выберите «ОГОНЬ».
-</div>
+        <div class="stat">
+            <b id="mission">1</b>
+            <span>Миссия</span>
+        </div>
+    </div>
 
-<!-- НИЗ -->
-<div id="bottom">
+    <div class="story" id="story">
 
-  <div id="squad"></div>
+        <div class="chapter" id="chapter">
+            ГЛАВА I · ПЕРВЫЙ БОЙ
+        </div>
 
-  <div id="buttons">
+        <div class="location" id="location">
+            Деревня у реки
+        </div>
 
-    <button class="actionBtn active" id="moveBtn">
-      ДВИЖЕНИЕ
-    </button>
+        <div class="time" id="time">
+            06:40 · Восточный сектор
+        </div>
 
-    <button class="actionBtn" id="fireBtn">
-      ОГОНЬ
-    </button>
+        <div class="text" id="text">
+            Туман медленно отступает от полей.
 
-    <button class="actionBtn" id="grenadeBtn">
-      ГРАНАТА
-    </button>
+            Где-то впереди находится деревня, которую удерживает противник. За ней — мост через реку.
 
-    <button class="actionBtn" id="coverBtn">
-      УКРЫТИЕ
-    </button>
+            Вчера вечером ваш батальон получил приказ занять переправу. Теперь этот приказ выполняет ваше отделение.
 
-  </div>
+            Восемь человек.
 
-</div>
+            Несколько автоматов, винтовки, пулемёт и немного гранат.
 
-<!-- КОНЕЦ -->
-<div id="endScreen">
+            Вы приседаете за низкой каменной стеной и смотрите на дома впереди.
 
-  <div class="endBox">
+            Первым появляется сержант Михаил.
+        </div>
 
-    <h1 id="endTitle">
-      МИССИЯ ЗАВЕРШЕНА
-    </h1>
+        <div class="dialogue" id="dialogue">
+            <strong>МИХАИЛ:</strong><br>
+            — Командир, вижу движение возле крайнего дома. Похоже, часовые. Что делаем?
+        </div>
 
-    <p id="endText"></p>
+        <div class="decisionTitle">
+            Ваш приказ
+        </div>
 
-    <button id="restart">
-      НАЧАТЬ ЗАНОВО
-    </button>
+        <div id="choices"></div>
 
-  </div>
+        <div class="log">
+            <div class="logTitle">ЖУРНАЛ ОПЕРАЦИИ</div>
+            <div id="log"></div>
+        </div>
+
+    </div>
+
+    <div class="end" id="end">
+        <h1 id="endTitle"></h1>
+        <p id="endText"></p>
+        <button class="restart" onclick="restartGame()">
+            НАЧАТЬ ЗАНОВО
+        </button>
+    </div>
+
+    <div class="footer">
+        БРАТЬЯ ПО ОРУЖИЮ · ТЕКСТОВАЯ ТАКТИЧЕСКАЯ КАМПАНИЯ
+    </div>
 
 </div>
 
 <script>
-"use strict";
-
-/* =====================================================
-   CANVAS
-===================================================== */
-
-const canvas=document.getElementById("canvas");
-const ctx=canvas.getContext("2d");
-
-let W=0;
-let H=0;
-
-function resize(){
-
-  W=window.innerWidth;
-  H=window.innerHeight;
-
-  canvas.width=W;
-  canvas.height=H;
-}
-
-window.addEventListener("resize",resize);
-resize();
-
-
-/* =====================================================
-   МИР
-===================================================== */
-
-const world={
-  width:1200,
-  height:760
-};
-
-let camera={
-  x:0,
-  y:0
-};
-
-
-/* =====================================================
+/* ======================================================
    СОСТОЯНИЕ
-===================================================== */
+====================================================== */
 
-let selected=0;
-let mode="move";
-
-let gameOver=false;
-let elapsed=0;
-
-let lastTime=performance.now();
-
-
-/* =====================================================
-   СОЛДАТЫ
-===================================================== */
-
-const soldiers=[
-
-  {
-    name:"ИВАН",
-    role:"Командир",
-    weapon:"ППШ",
-    x:145,
-    y:520,
-    tx:145,
-    ty:520,
-    hp:100,
-    maxHp:100,
-    speed:115,
-    range:300,
-    damage:20,
-    cooldown:0,
-    grenades:2,
-    cover:false,
-    alive:true
-  },
-
-  {
-    name:"МИХАИЛ",
-    role:"Стрелок",
-    weapon:"МОСИН",
-    x:95,
-    y:560,
-    tx:95,
-    ty:560,
-    hp:100,
-    maxHp:100,
-    speed:95,
-    range:390,
-    damage:38,
-    cooldown:0,
-    grenades:1,
-    cover:false,
-    alive:true
-  },
-
-  {
-    name:"АЛЕКСЕЙ",
-    role:"ПУЛЕМЁТЧИК",
-    weapon:"ДП-27",
-    x:205,
-    y:570,
-    tx:205,
-    ty:570,
-    hp:100,
-    maxHp:100,
-    speed:82,
-    range:330,
-    damage:11,
-    cooldown:0,
-    grenades:1,
-    cover:false,
-    alive:true
-  },
-
-  {
-    name:"ПЁТР",
-    role:"ГРЕНАДЕР",
-    weapon:"ППШ",
-    x:80,
-    y:505,
-    tx:80,
-    ty:505,
-    hp:100,
-    maxHp:100,
-    speed:105,
-    range:270,
-    damage:21,
-    cooldown:0,
-    grenades:3,
-    cover:false,
-    alive:true
-  },
-
-  {
-    name:"СЕРГЕЙ",
-    role:"СТРЕЛОК",
-    weapon:"МОСИН",
-    x:260,
-    y:515,
-    tx:260,
-    ty:515,
-    hp:100,
-    maxHp:100,
-    speed:95,
-    range:390,
-    damage:38,
-    cooldown:0,
-    grenades:1,
-    cover:false,
-    alive:true
-  },
-
-  {
-    name:"НИКОЛАЙ",
-    role:"АВТОМАТЧИК",
-    weapon:"ППШ",
-    x:175,
-    y:595,
-    tx:175,
-    ty:595,
-    hp:100,
-    maxHp:100,
-    speed:110,
-    range:290,
-    damage:18,
-    cooldown:0,
-    grenades:2,
-    cover:false,
-    alive:true
-  }
-
-];
+let state={
+    men:8,
+    morale:82,
+    ammo:74,
+    mission:1,
+    chapter:1,
+    score:0,
+    log:[],
+    flags:{
+        stealth:false,
+        wounded:false,
+        machinegun:false,
+        bridge:false,
+        documents:false
+    }
+};
 
 
-/* =====================================================
-   ВРАГИ
-===================================================== */
+/* ======================================================
+   ЭЛЕМЕНТЫ
+====================================================== */
 
-const enemies=[
+const menEl=document.getElementById("men");
+const moraleEl=document.getElementById("morale");
+const ammoEl=document.getElementById("ammo");
+const missionEl=document.getElementById("mission");
 
-  {
-    x:850,y:205,
-    hp:100,maxHp:100,
-    type:"rifle",
-    cooldown:1,
-    alive:true
-  },
+const chapterEl=document.getElementById("chapter");
+const locationEl=document.getElementById("location");
+const timeEl=document.getElementById("time");
+const textEl=document.getElementById("text");
+const dialogueEl=document.getElementById("dialogue");
+const choicesEl=document.getElementById("choices");
+const logEl=document.getElementById("log");
 
-  {
-    x:950,y:250,
-    hp:100,maxHp:100,
-    type:"rifle",
-    cooldown:1.5,
-    alive:true
-  },
-
-  {
-    x:780,y:330,
-    hp:100,maxHp:100,
-    type:"rifle",
-    cooldown:1,
-    alive:true
-  },
-
-  {
-    x:1030,y:390,
-    hp:100,maxHp:100,
-    type:"mg",
-    cooldown:1,
-    alive:true
-  },
-
-  {
-    x:900,y:470,
-    hp:100,maxHp:100,
-    type:"rifle",
-    cooldown:1.3,
-    alive:true
-  },
-
-  {
-    x:740,y:455,
-    hp:100,maxHp:100,
-    type:"rifle",
-    cooldown:1,
-    alive:true
-  }
-
-];
+const storyEl=document.getElementById("story");
+const endEl=document.getElementById("end");
 
 
-/* =====================================================
-   КАРТА
-===================================================== */
+/* ======================================================
+   UI
+====================================================== */
 
-const houses=[
+function updateStats(){
 
-  {
-    x:470,
-    y:100,
-    w:230,
-    h:145
-  },
-
-  {
-    x:790,
-    y:100,
-    w:200,
-    h:145
-  },
-
-  {
-    x:540,
-    y:390,
-    w:205,
-    h:145
-  }
-
-];
-
-const walls=[
-
-  {
-    x:340,
-    y:300,
-    w:190,
-    h:25
-  },
-
-  {
-    x:800,
-    y:340,
-    w:210,
-    h:25
-  },
-
-  {
-    x:350,
-    y:625,
-    w:260,
-    h:24
-  }
-
-];
-
-const trees=[
-
-  [420,80],
-  [455,70],
-  [510,70],
-  [1030,80],
-  [1080,120],
-  [1050,170],
-  [300,120],
-  [330,80],
-  [1040,570],
-  [1080,620],
-  [980,650],
-  [420,530],
-  [350,510],
-  [300,570],
-  [680,650],
-  [720,680]
-
-];
-
-
-/* =====================================================
-   ПУЛИ
-===================================================== */
-
-let bullets=[];
-
-
-/* =====================================================
-   ВЗРЫВЫ
-===================================================== */
-
-let explosions=[];
-
-
-/* =====================================================
-   УТИЛИТЫ
-===================================================== */
-
-function distance(a,b){
-
-  return Math.hypot(
-    a.x-b.x,
-    a.y-b.y
-  );
+    menEl.textContent=state.men;
+    moraleEl.textContent=Math.max(0,state.morale);
+    ammoEl.textContent=Math.max(0,state.ammo);
+    missionEl.textContent=state.mission;
 
 }
 
 
-function aliveEnemies(){
+function addLog(text){
 
-  return enemies.filter(e=>e.alive);
+    state.log.unshift(text);
 
-}
-
-
-function aliveSoldiers(){
-
-  return soldiers.filter(s=>s.alive);
-
-}
-
-
-function message(text){
-
-  const el=document.getElementById("message");
-
-  el.textContent=text;
-
-  el.classList.add("show");
-
-  clearTimeout(message.timer);
-
-  message.timer=setTimeout(()=>{
-    el.classList.remove("show");
-  },1600);
-
-}
-
-
-/* =====================================================
-   UI ОТРЯДА
-===================================================== */
-
-function updateSquad(){
-
-  const box=document.getElementById("squad");
-
-  box.innerHTML="";
-
-  soldiers.forEach((s,index)=>{
-
-    const card=document.createElement("div");
-
-    card.className="soldierCard";
-
-    if(index===selected){
-      card.classList.add("selected");
+    if(state.log.length>6){
+        state.log.pop();
     }
 
-    if(!s.alive){
-      card.classList.add("dead");
-    }
+    logEl.innerHTML=
+        state.log
+        .map(x=>`<div class="logItem">— ${x}</div>`)
+        .join("");
 
-    card.innerHTML=`
+}
 
-      <div class="soldierName">
-        ${s.name}
-      </div>
 
-      <div class="soldierWeapon">
-        ${s.role} · ${s.weapon}
-      </div>
+function renderScene(scene){
 
-      <div class="hp">
-        <i style="width:${s.hp}%"></i>
-      </div>
+    chapterEl.textContent=scene.chapter;
+    locationEl.textContent=scene.location;
+    timeEl.textContent=scene.time;
 
-    `;
+    textEl.textContent=scene.text;
 
-    card.addEventListener("pointerdown",function(e){
+    dialogueEl.innerHTML=
+        "<strong>"+
+        scene.speaker+
+        ":</strong><br>"+
+        scene.dialogue;
 
-      e.preventDefault();
-      e.stopPropagation();
+    choicesEl.innerHTML="";
 
-      selectSoldier(index);
+    scene.choices.forEach((choice,index)=>{
+
+        const button=document.createElement("button");
+
+        button.className="choice";
+
+        button.innerHTML=`
+            <span class="number">${index+1}</span>
+            <b>${choice.title}</b>
+            <span class="desc">${choice.desc}</span>
+        `;
+
+        button.addEventListener("click",()=>{
+
+            choose(choice);
+
+        });
+
+        choicesEl.appendChild(button);
 
     });
 
-    box.appendChild(card);
-
-  });
+    updateStats();
 
 }
 
 
-function selectSoldier(index){
+/* ======================================================
+   ВЫБОР
+====================================================== */
 
-  if(!soldiers[index].alive){
+function choose(choice){
 
-    message("Боец погиб");
-
-    return;
-  }
-
-  selected=index;
-
-  updateSquad();
-
-  message(
-    soldiers[index].name+
-    " — "+
-    soldiers[index].role
-  );
-
-}
-
-
-/* =====================================================
-   РЕЖИМЫ
-===================================================== */
-
-function setMode(newMode){
-
-  mode=newMode;
-
-  document.querySelectorAll(".actionBtn")
-    .forEach(b=>b.classList.remove("active"));
-
-  if(mode==="move"){
-    document
-      .getElementById("moveBtn")
-      .classList.add("active");
-  }
-
-  if(mode==="fire"){
-    document
-      .getElementById("fireBtn")
-      .classList.add("active");
-  }
-
-  if(mode==="grenade"){
-    document
-      .getElementById("grenadeBtn")
-      .classList.add("active");
-  }
-
-  if(mode==="cover"){
-    document
-      .getElementById("coverBtn")
-      .classList.add("active");
-  }
-
-}
-
-
-/* =====================================================
-   КНОПКИ
-===================================================== */
-
-function button(id,fn){
-
-  const el=document.getElementById(id);
-
-  el.addEventListener("pointerdown",function(e){
-
-    e.preventDefault();
-    e.stopPropagation();
-
-    fn();
-
-  });
-
-}
-
-
-button("moveBtn",()=>{
-  setMode("move");
-  message("Режим движения");
-});
-
-
-button("fireBtn",()=>{
-  setMode("fire");
-  message("Выберите врага");
-});
-
-
-button("grenadeBtn",()=>{
-  setMode("grenade");
-  message("Укажите место броска");
-});
-
-
-button("coverBtn",()=>{
-
-  const s=soldiers[selected];
-
-  if(!s.alive)return;
-
-  s.cover=!s.cover;
-
-  if(s.cover){
-    message("Боец занял укрытие");
-  }else{
-    message("Укрытие покинуто");
-  }
-
-});
-
-
-/* =====================================================
-   КООРДИНАТЫ КАРТЫ
-===================================================== */
-
-function screenToWorld(clientX,clientY){
-
-  const rect=canvas.getBoundingClientRect();
-
-  const sx=world.width/W;
-  const sy=world.height/H;
-
-  return {
-
-    x:clientX/sx+camera.x,
-    y:clientY/sy+camera.y
-
-  };
-
-}
-
-
-/* =====================================================
-   КЛИК ПО КАРТЕ
-===================================================== */
-
-canvas.addEventListener("pointerdown",function(e){
-
-  if(gameOver)return;
-
-  e.preventDefault();
-
-  const p=screenToWorld(
-    e.clientX,
-    e.clientY
-  );
-
-  const s=soldiers[selected];
-
-  if(!s || !s.alive)return;
-
-
-  /* ДВИЖЕНИЕ */
-
-  if(mode==="move"){
-
-    s.tx=p.x;
-    s.ty=p.y;
-
-    s.cover=false;
-
-    message(
-      s.name+
-      " движется"
-    );
-
-    return;
-  }
-
-
-  /* УКРЫТИЕ */
-
-  if(mode==="cover"){
-
-    s.tx=p.x;
-    s.ty=p.y;
-    s.cover=true;
-
-    setMode("move");
-
-    message(
-      s.name+
-      " занял позицию"
-    );
-
-    return;
-  }
-
-
-  /* ГРАНАТА */
-
-  if(mode==="grenade"){
-
-    throwGrenade(
-      s,
-      p.x,
-      p.y
-    );
-
-    setMode("move");
-
-    return;
-  }
-
-
-  /* ОГОНЬ */
-
-  if(mode==="fire"){
-
-    let target=null;
-
-    for(const enemy of enemies){
-
-      if(!enemy.alive)continue;
-
-      if(
-        Math.hypot(
-          enemy.x-p.x,
-          enemy.y-p.y
-        )<35
-      ){
-
-        target=enemy;
-        break;
-
-      }
-
+    if(choice.action){
+        choice.action();
     }
 
-    if(target){
-
-      shoot(s,target);
-
-    }else{
-
-      message("Цель не найдена");
-
+    if(choice.scene){
+        addLog(choice.log || choice.title);
+        renderScene(choice.scene);
     }
 
-  }
-
-});
-
-
-/* =====================================================
-   СТРЕЛЬБА
-===================================================== */
-
-function shoot(s,target){
-
-  if(s.cooldown>0)return;
-
-  const d=distance(s,target);
-
-  if(d>s.range){
-
-    message("Слишком далеко");
-
-    return;
-  }
-
-  s.cooldown=
-    s.role==="ПУЛЕМЁТЧИК"
-      ? .2
-      : .6;
-
-  target.hp-=s.damage;
-
-  bullets.push({
-
-    x:s.x,
-    y:s.y,
-
-    tx:target.x,
-    ty:target.y,
-
-    life:.12
-
-  });
-
-  if(target.hp<=0){
-
-    target.hp=0;
-    target.alive=false;
-
-    message("Враг уничтожен");
-
-    checkVictory();
-
-  }
+    window.scrollTo({
+        top:0,
+        behavior:"smooth"
+    });
 
 }
 
 
-/* =====================================================
-   ГРАНАТА
-===================================================== */
+/* ======================================================
+   МИССИЯ 1
+====================================================== */
 
-function throwGrenade(s,x,y){
+const scene1={
 
-  if(s.grenades<=0){
+    chapter:"ГЛАВА I · ПЕРВЫЙ БОЙ",
 
-    message("Нет гранат");
+    location:"Деревня у реки",
 
-    return;
-  }
+    time:"06:40 · Восточный сектор",
 
-  s.grenades--;
+    speaker:"МИХАИЛ",
 
-  explosions.push({
+    dialogue:
+        "Командир, вижу движение возле крайнего дома. Похоже, часовые. Что делаем?",
 
-    x:x,
-    y:y,
+    text:
+`Туман медленно отступает от полей.
 
-    radius:5,
+Где-то впереди находится деревня, которую удерживает противник. За ней — мост через реку.
 
-    life:.55
+Вчера вечером ваш батальон получил приказ занять переправу. Теперь этот приказ выполняет ваше отделение.
 
-  });
+Восемь человек.
 
-  enemies.forEach(enemy=>{
+Несколько автоматов, винтовки, пулемёт и немного гранат.
 
-    if(!enemy.alive)return;
+Вы приседаете за низкой каменной стеной и смотрите на дома впереди.
 
-    const d=Math.hypot(
-      enemy.x-x,
-      enemy.y-y
-    );
+Первым появляется сержант Михаил.`,
 
-    if(d<100){
+    choices:[
 
-      enemy.hp-=
-        90*
-        Math.max(
-          .15,
-          1-d/110
-        );
+        {
+            title:"Подойти незаметно",
+            desc:"Обойти край деревни и попытаться снять часовых без шума.",
+            log:"Отделение начало скрытное продвижение.",
 
-      if(enemy.hp<=0){
+            action:()=>{
 
-        enemy.hp=0;
-        enemy.alive=false;
+                state.flags.stealth=true;
+                state.morale+=4;
 
-      }
+            },
 
-    }
+            scene:{
+                chapter:"ГЛАВА I · ПЕРВЫЙ БОЙ",
+                location:"Окраина деревни",
+                time:"06:52",
 
-  });
+                speaker:"МИХАИЛ",
 
-  message("ГРАНАТА!");
+                dialogue:
+                    "Тихо. Один часовой прямо перед нами. Второй у сарая. Можем пройти ещё ближе.",
 
-  checkVictory();
+                text:
+`Отделение медленно двигается между кустами.
+
+Никто не разговаривает.
+
+Вы поднимаете руку, и бойцы останавливаются.
+
+До первого часового около тридцати метров.
+
+Вторая группа противника пока вас не заметила.`,
+
+                choices:[
+
+                    {
+                        title:"Снять первого часового",
+                        desc:"Рискнуть и уничтожить его бесшумно.",
+
+                        action:()=>{
+
+                            state.morale+=5;
+
+                        },
+
+                        log:"Первый часовой устранён.",
+
+                        scene:{
+                            chapter:"ГЛАВА I · ПЕРВЫЙ БОЙ",
+                            location:"Сарай на окраине",
+                            time:"07:03",
+
+                            speaker:"АЛЕКСЕЙ",
+
+                            dialogue:
+                                "Командир, внутри сарая ящик с боеприпасами. Ещё нашли карту деревни.",
+
+                            text:
+`Вы добираетесь до сарая.
+
+Внутри обнаруживается небольшой запас патронов и карта обороны.
+
+На карте отмечен пулемётный расчёт возле центральной площади.
+
+Теперь у вас есть преимущество.`,
+
+                            choices:[
+
+                                {
+                                    title:"Забрать карту и боеприпасы",
+                                    desc:"Использовать найденные сведения для дальнейшего штурма.",
+
+                                    action:()=>{
+
+                                        state.ammo+=18;
+                                        state.flags.documents=true;
+
+                                    },
+
+                                    log:"Захвачена карта обороны и боеприпасы.",
+
+                                    scene:scene2
+                                },
+
+                                {
+                                    title:"Оставить всё и продолжить скрытно",
+                                    desc:"Не задерживаться на позиции.",
+
+                                    action:()=>{
+
+                                        state.morale+=3;
+
+                                    },
+
+                                    log:"Отделение продолжило продвижение без задержки.",
+
+                                    scene:scene2
+                                }
+
+                            ]
+                        }
+                    },
+
+                    {
+                        title:"Подождать",
+                        desc:"Наблюдать за противником и выяснить его расположение.",
+
+                        action:()=>{
+
+                            state.morale+=2;
+
+                        },
+
+                        log:"Отделение несколько минут наблюдало за противником.",
+
+                        scene:scene2
+                    }
+
+                ]
+            }
+        },
+
+        {
+            title:"Открыть огонь",
+            desc:"Начать бой сразу и попытаться быстро прорваться к деревне.",
+
+            action:()=>{
+
+                state.ammo-=14;
+                state.morale-=6;
+
+            },
+
+            log:"Отделение вступило в открытый бой.",
+
+            scene:{
+                chapter:"ГЛАВА I · ПЕРВЫЙ БОЙ",
+                location:"Каменная стена",
+                time:"06:47",
+
+                speaker:"АЛЕКСЕЙ",
+
+                dialogue:
+                    "Пулемёт справа! Пригнитесь!",
+
+                text:
+`Тишина заканчивается за одну секунду.
+
+Первый залп проходит над стеной.
+
+Ваш пулемётчик отвечает огнём, но противник уже поднял тревогу.
+
+Из домов выбегают солдаты.
+
+Теперь скрытность потеряна.`,
+
+                choices:[
+
+                    {
+                        title:"Прижать противника огнём",
+                        desc:"Расходовать боеприпасы, чтобы дать отделению возможность продвинуться.",
+
+                        action:()=>{
+
+                            state.ammo-=22;
+                            state.morale+=3;
+
+                        },
+
+                        log:"Отделение подавило передовые позиции.",
+
+                        scene:scene2
+                    },
+
+                    {
+                        title:"Отступить и зайти с фланга",
+                        desc:"Сохранить людей и изменить направление атаки.",
+
+                        action:()=>{
+
+                            state.morale+=6;
+
+                        },
+
+                        log:"Отделение отошло для обходного манёвра.",
+
+                        scene:scene2
+                    }
+
+                ]
+            }
+        },
+
+        {
+            title:"Оставить деревню и идти к мосту",
+            desc:"Игнорировать противника на окраине и попытаться сразу захватить переправу.",
+
+            action:()=>{
+
+                state.flags.bridge=true;
+                state.morale-=5;
+
+            },
+
+            log:"Командир решил направиться прямо к мосту.",
+
+            scene:{
+                chapter:"ГЛАВА I · ПЕРВЫЙ БОЙ",
+                location:"Подход к мосту",
+                time:"07:05",
+
+                speaker:"МИХАИЛ",
+
+                dialogue:
+                    "Плохая новость. Мост охраняют. И они нас уже заметили.",
+
+                text:
+`Вы обходите деревню.
+
+Река оказывается шире, чем предполагалось.
+
+На другом берегу видны укрепления.
+
+Мост — единственный быстрый путь через воду.
+
+Сейчас отделение находится под открытым небом.`,
+
+                choices:[
+
+                    {
+                        title:"Атаковать мост",
+                        desc:"Рискнуть и попытаться взять переправу быстрым штурмом.",
+
+                        action:()=>{
+
+                            state.ammo-=25;
+                            state.morale-=10;
+
+                        },
+
+                        log:"Начат штурм моста.",
+
+                        scene:scene3
+                    },
+
+                    {
+                        title:"Вернуться к деревне",
+                        desc:"Сначала уничтожить оборону в тылу.",
+
+                        action:()=>{
+
+                            state.morale+=2;
+
+                        },
+
+                        log:"Отделение вернулось к деревне.",
+
+                        scene:scene2
+                    }
+
+                ]
+            }
+        }
+
+    ]
+};
+
+
+/* ======================================================
+   МИССИЯ 1 — ПРОДОЛЖЕНИЕ
+====================================================== */
+
+const scene2={
+
+    chapter:"ГЛАВА I · ПЕРВЫЙ БОЙ",
+
+    location:"Центральная улица",
+
+    time:"07:15",
+
+    speaker:"МИХАИЛ",
+
+    dialogue:
+        "До площади около ста метров. Там их пулемёт. Если он откроет огонь — нам конец.",
+
+    text:
+`Отделение подходит к центральной улице.
+
+Дома по обе стороны создают узкий коридор.
+
+Где-то впереди работает двигатель.
+
+Вы слышите пулемётные очереди.
+
+Противник готовится к обороне.`,
+
+    choices:[
+
+        {
+            title:"Послать пулемётчика на позицию",
+            desc:"Дать своему пулемётному расчёту возможность подавить площадь.",
+
+            action:()=>{
+
+                state.flags.machinegun=true;
+                state.ammo-=8;
+                state.morale+=6;
+
+            },
+
+            log:"Пулемётный расчёт занял позицию.",
+
+            scene:scene3
+        },
+
+        {
+            title:"Атаковать через дома",
+            desc:"Разделить отделение и пройти через здания.",
+
+            action:()=>{
+
+                state.morale-=3;
+                state.ammo-=8;
+
+                if(Math.random()<.25){
+
+                    state.men-=1;
+                    state.flags.wounded=true;
+
+                }
+
+            },
+
+            log:"Отделение начало продвижение через дома.",
+
+            scene:scene3
+        },
+
+        {
+            title:"Бросить гранаты и идти вперёд",
+            desc:"Быстро подавить огневую точку.",
+
+            action:()=>{
+
+                state.ammo-=4;
+                state.morale+=4;
+
+            },
+
+            log:"Огневая точка подавлена гранатами.",
+
+            scene:scene3
+        }
+
+    ]
+};
+
+
+/* ======================================================
+   МОСТ
+====================================================== */
+
+const scene3={
+
+    chapter:"ГЛАВА I · ПЕРВЫЙ БОЙ",
+
+    location:"Мост через реку",
+
+    time:"07:38",
+
+    speaker:"АЛЕКСЕЙ",
+
+    dialogue:
+        "Командир... они отходят. Но мост заминирован.",
+
+    text:
+`Вы достигаете переправы.
+
+Позади остаются первые дома деревни.
+
+Перед вами — река.
+
+Несколько солдат противника отступают на другой берег.
+
+На мосту видны провода.
+
+Противник приготовил взрывчатку.`,
+
+    choices:[
+
+        {
+            title:"Обезвредить заряд",
+            desc:"Остановиться и попытаться сохранить мост.",
+
+            action:()=>{
+
+                state.morale+=8;
+
+            },
+
+            log:"Инженерная группа начала разминирование.",
+
+            scene:{
+                chapter:"ГЛАВА I · ПЕРВЫЙ БОЙ",
+                location:"Мост",
+                time:"07:52",
+
+                speaker:"МИХАИЛ",
+
+                dialogue:
+                    "Есть! Заряд снят. Можно переходить.",
+
+                text:
+`Последние минуты проходят в полной тишине.
+
+Инженер аккуратно перерезает провода.
+
+Мост остаётся цел.
+
+На другом берегу слышны удаляющиеся машины.
+
+Вы подняли над переправой сигнал своего батальона.
+
+Первая задача выполнена.`,
+
+                choices:[
+
+                    {
+                        title:"Перейти на другой берег",
+                        desc:"Продолжить наступление.",
+
+                        action:()=>{
+
+                            state.mission=2;
+                            state.score+=100;
+                            state.flags.bridge=true;
+
+                        },
+
+                        log:"Мост захвачен. Первый этап операции завершён.",
+
+                        scene:scene4
+                    }
+
+                ]
+            }
+        },
+
+        {
+            title:"Оставить мост и искать лодки",
+            desc:"Не тратить время на разминирование.",
+
+            action:()=>{
+
+                state.morale-=8;
+
+            },
+
+            log:"Командир отказался от попытки сохранить мост.",
+
+            scene:{
+                chapter:"ГЛАВА I · ПЕРВЫЙ БОЙ",
+                location:"Берег реки",
+                time:"08:05",
+
+                speaker:"МИХАИЛ",
+
+                dialogue:
+                    "Лодок нет. Похоже, придётся возвращаться к мосту.",
+
+                text:
+`Решение оказалось ошибкой.
+
+Река слишком широкая.
+
+Без моста продвижение невозможно.
+
+Отделение теряет драгоценное время.`,
+
+                choices:[
+
+                    {
+                        title:"Вернуться к мосту",
+                        desc:"Попытаться закончить начатое.",
+
+                        action:()=>{
+
+                            state.morale-=2;
+
+                        },
+
+                        log:"Отделение вернулось к мосту.",
+
+                        scene:scene3
+                    }
+
+                ]
+            }
+        }
+
+    ]
+};
+
+
+/* ======================================================
+   МИССИЯ 2
+====================================================== */
+
+const scene4={
+
+    chapter:"ГЛАВА II · ЗА ЛИНИЕЙ ФРОНТА",
+
+    location:"Другой берег",
+
+    time:"10:20",
+
+    speaker:"МИХАИЛ",
+
+    dialogue:
+        "Командир, приказ изменился. Нас отправляют дальше. Нужно найти штаб противника.",
+
+    text:
+`После захвата переправы вы получаете новый приказ.
+
+Основные силы батальона остаются у реки.
+
+Вашему отделению предстоит пройти дальше самостоятельно.
+
+Говорят, в нескольких километрах находится полевой штаб противника.
+
+Если удастся захватить документы — командование получит информацию о следующем рубеже.`,
+
+    choices:[
+
+        {
+            title:"Продолжить ночью",
+            desc:"Днём спрятаться, а после наступления темноты пройти дальше.",
+
+            action:()=>{
+
+                state.morale+=5;
+
+            },
+
+            log:"Отделение решило продолжить операцию ночью.",
+
+            scene:{
+
+                chapter:"ГЛАВА II · ЗА ЛИНИЕЙ ФРОНТА",
+
+                location:"Лес",
+
+                time:"23:40",
+
+                speaker:"ПЁТР",
+
+                dialogue:
+                    "Тихо. Впереди свет. Похоже на штаб.",
+
+                text:
+`Ночь скрывает движение отделения.
+
+Через деревья видны огни.
+
+Один большой дом.
+
+Рядом несколько машин.
+
+Это может быть штаб.`,
+
+                choices:[
+
+                    {
+                        title:"Подойти ближе",
+                        desc:"Выяснить, что происходит внутри.",
+
+                        action:()=>{
+
+                            state.flags.documents=true;
+
+                        },
+
+                        log:"Отделение обнаружило штаб противника.",
+
+                        scene:{
+
+                            chapter:"ГЛАВА II · ЗА ЛИНИЕЙ ФРОНТА",
+
+                            location:"Полевой штаб",
+
+                            time:"00:15",
+
+                            speaker:"АЛЕКСЕЙ",
+
+                            dialogue:
+                                "Командир, внутри офицеры. Но охрана небольшая.",
+
+                            text:
+`Перед вами последняя проблема этой ночи.
+
+Если уничтожить штаб — противник потеряет управление.
+
+Если поднять тревогу — всё подразделение окажется в окружении.`,
+
+                            choices:[
+
+                                {
+                                    title:"Проникнуть внутрь",
+                                    desc:"Попытаться захватить документы и офицера.",
+
+                                    action:()=>{
+
+                                        state.score+=150;
+                                        state.morale+=10;
+
+                                    },
+
+                                    log:"Штаб захвачен. Получены важные документы.",
+
+                                    scene:finalScene
+
+                                },
+
+                                {
+                                    title:"Уничтожить штаб",
+                                    desc:"Не рисковать людьми и уничтожить объект.",
+
+                                    action:()=>{
+
+                                        state.ammo-=15;
+                                        state.score+=100;
+
+                                    },
+
+                                    log:"Штаб противника уничтожен.",
+
+                                    scene:finalScene
+                                }
+
+                            ]
+                        }
+                    }
+
+                ]
+            }
+        },
+
+        {
+            title:"Идти днём",
+            desc:"Не терять время и двигаться прямо к цели.",
+
+            action:()=>{
+
+                state.morale-=4;
+                state.ammo-=8;
+
+            },
+
+            log:"Отделение продолжило движение днём.",
+
+            scene:finalScene
+        }
+
+    ]
+};
+
+
+/* ======================================================
+   ФИНАЛ
+====================================================== */
+
+const finalScene={
+
+    chapter:"КОНЕЦ ОПЕРАЦИИ",
+
+    location:"За линией фронта",
+
+    time:"Следующее утро",
+
+    speaker:"МИХАИЛ",
+
+    dialogue:
+        "Получилось, командир. Теперь они знают, что мы здесь.",
+
+    text:
+`Рассвет встречает отделение у дороги.
+
+Позади остаётся деревня.
+
+Мост захвачен.
+
+Противник потерял часть своих позиций.
+
+Но война только начинается.
+
+Вы смотрите на своих людей.
+
+Кто-то ранен.
+
+Кто-то устал.
+
+Но все ещё стоят рядом.
+
+Вдалеке слышится артиллерия.
+
+Новый приказ уже в пути.`,
+
+    choices:[
+
+        {
+            title:"Продолжить наступление",
+            desc:"Начать следующую главу кампании.",
+
+            action:()=>{
+
+                state.mission=3;
+                state.score+=200;
+
+            },
+
+            log:"Операция завершена. Начинается новая глава.",
+
+            scene:{
+                chapter:"ГЛАВА III · НОВЫЙ ПРИКАЗ",
+
+                location:"Передовая",
+
+                time:"Следующий день",
+
+                speaker:"КОМАНДОВАНИЕ",
+
+                dialogue:
+                    "Отделение, приготовиться. Через час начинаем новое наступление.",
+
+                text:
+`Вы снова собираете бойцов.
+
+Вчера они были просто солдатами.
+
+Сегодня они знают друг друга.
+
+И знают, что впереди будет ещё тяжелее.
+
+Вы берёте приказ.
+
+Следующая операция начинается через час.`,
+
+                choices:[
+
+                    {
+                        title:"ПРИНЯТЬ ПРИКАЗ",
+                        desc:"Продолжить кампанию.",
+
+                        action:()=>{
+
+                            finish(
+                                "ПРОДОЛЖЕНИЕ СЛЕДУЕТ",
+                                "Первая операция завершена. Ваше отделение готово к следующему бою."
+                            );
+
+                        },
+
+                        log:"Командир принял новый приказ."
+                    }
+
+                ]
+            }
+        }
+
+    ]
+};
+
+
+/* ======================================================
+   ФИНАЛЬНЫЙ ЭКРАН
+====================================================== */
+
+function finish(title,text){
+
+    storyEl.style.display="none";
+
+    endEl.style.display="block";
+
+    document.getElementById("endTitle").textContent=title;
+
+    document.getElementById("endText").textContent=
+        text+
+        "\n\nВыживших: "+
+        state.men+
+        "\nМораль: "+
+        state.morale+
+        "\nБоеприпасы: "+
+        state.ammo+
+        "\nОчки операции: "+
+        state.score;
+}
+
+
+/* ======================================================
+   RESTART
+====================================================== */
+
+function restartGame(){
+
+    state={
+        men:8,
+        morale:82,
+        ammo:74,
+        mission:1,
+        chapter:1,
+        score:0,
+        log:[],
+        flags:{
+            stealth:false,
+            wounded:false,
+            machinegun:false,
+            bridge:false,
+            documents:false
+        }
+    };
+
+    endEl.style.display="none";
+    storyEl.style.display="block";
+
+    renderScene(scene1);
+
+    window.scrollTo({
+        top:0,
+        behavior:"instant"
+    });
 
 }
 
 
-/* =====================================================
-   ИИ
-===================================================== */
+/* ======================================================
+   СТАРТ
+====================================================== */
 
-function updateEnemies(dt){
+addLog("Отделение получило приказ захватить деревню и мост.");
 
-  for(const enemy of enemies){
-
-    if(!enemy.alive)continue;
-
-    enemy.cooldown-=dt;
-
-    let target=null;
-    let best=Infinity;
-
-    for(const soldier of soldiers){
-
-      if(!soldier.alive)continue;
-
-      const d=distance(
-        enemy,
-        soldier
-      );
-
-      if(d<best){
-
-        best=d;
-        target=soldier;
-
-      }
-
-    }
-
-    if(!target)continue;
-
-    if(
-      best<360 &&
-      enemy.cooldown<=0
-    ){
-
-      enemy.cooldown=
-        enemy.type==="mg"
-        ? .32
-        : 1.1;
-
-      let damage=
-        enemy.type==="mg"
-        ? 7
-        : 13;
-
-      if(target.cover){
-
-        damage*=.45;
-
-      }
-
-      target.hp-=damage;
-
-      bullets.push({
-
-        x:enemy.x,
-        y:enemy.y,
-
-        tx:target.x,
-        ty:target.y,
-
-        life:.12
-
-      });
-
-      if(target.hp<=0){
-
-        target.hp=0;
-        target.alive=false;
-
-        message(
-          target.name+
-          " погиб"
-        );
-
-        chooseNext();
-
-      }
-
-    }
-
-  }
-
-}
-
-
-function chooseNext(){
-
-  if(
-    soldiers[selected] &&
-    soldiers[selected].alive
-  ){
-    return;
-  }
-
-  const next=soldiers.findIndex(
-    s=>s.alive
-  );
-
-  if(next>=0){
-
-    selected=next;
-
-    updateSquad();
-
-  }
-
-}
-
-
-/* =====================================================
-   ДВИЖЕНИЕ
-===================================================== */
-
-function updateSoldiers(dt){
-
-  for(const s of soldiers){
-
-    if(!s.alive)continue;
-
-    s.cooldown=
-      Math.max(
-        0,
-        s.cooldown-dt
-      );
-
-    const dx=s.tx-s.x;
-    const dy=s.ty-s.y;
-
-    const d=Math.hypot(dx,dy);
-
-    if(d>3){
-
-      s.x+=
-        dx/d*
-        s.speed*
-        dt;
-
-      s.y+=
-        dy/d*
-        s.speed*
-        dt;
-
-    }
-
-  }
-
-}
-
-
-/* =====================================================
-   КАМЕРА
-===================================================== */
-
-function updateCamera(){
-
-  const s=soldiers[selected];
-
-  if(!s)return;
-
-  const sx=W/world.width;
-  const sy=H/world.height;
-
-  camera.x=
-    s.x-
-    W/(2*sx);
-
-  camera.y=
-    s.y-
-    H/(2*sy);
-
-  camera.x=Math.max(
-    0,
-    Math.min(
-      world.width-
-      W/sx,
-      camera.x
-    )
-  );
-
-  camera.y=Math.max(
-    0,
-    Math.min(
-      world.height-
-      H/sy,
-      camera.y
-    )
-  );
-
-}
-
-
-/* =====================================================
-   РИСОВАНИЕ
-===================================================== */
-
-function draw(){
-
-  ctx.clearRect(
-    0,
-    0,
-    W,
-    H
-  );
-
-  const sx=W/world.width;
-  const sy=H/world.height;
-
-  ctx.save();
-
-  ctx.scale(sx,sy);
-
-  ctx.translate(
-    -camera.x,
-    -camera.y
-  );
-
-
-  /* ЗЕМЛЯ */
-
-  ctx.fillStyle="#34442f";
-
-  ctx.fillRect(
-    0,
-    0,
-    world.width,
-    world.height
-  );
-
-
-  /* ДОРОГИ */
-
-  ctx.fillStyle="#625941";
-
-  ctx.fillRect(
-    0,
-    335,
-    world.width,
-    90
-  );
-
-  ctx.fillRect(
-    660,
-    0,
-    75,
-    world.height
-  );
-
-
-  /* ТЕКСТУРА */
-
-  ctx.fillStyle="#4b4b37";
-
-  for(let i=0;i<70;i++){
-
-    const x=
-      (i*173)%world.width;
-
-    const y=
-      (i*97)%world.height;
-
-    ctx.fillRect(
-      x,
-      y,
-      18,
-      5
-    );
-
-  }
-
-
-  /* ДЕРЕВЬЯ */
-
-  for(const t of trees){
-
-    ctx.fillStyle="#162317";
-
-    ctx.beginPath();
-
-    ctx.arc(
-      t[0],
-      t[1],
-      27,
-      0,
-      Math.PI*2
-    );
-
-    ctx.fill();
-
-    ctx.fillStyle="#294028";
-
-    ctx.beginPath();
-
-    ctx.arc(
-      t[0]-7,
-      t[1]-8,
-      20,
-      0,
-      Math.PI*2
-    );
-
-    ctx.fill();
-
-  }
-
-
-  /* ДОМА */
-
-  for(const h of houses){
-
-    ctx.fillStyle="#292923";
-
-    ctx.fillRect(
-      h.x,
-      h.y,
-      h.w,
-      h.h
-    );
-
-    ctx.fillStyle="#3d3b31";
-
-    ctx.fillRect(
-      h.x+9,
-      h.y+9,
-      h.w-18,
-      h.h-18
-    );
-
-    ctx.strokeStyle="#171815";
-
-    ctx.lineWidth=6;
-
-    ctx.strokeRect(
-      h.x,
-      h.y,
-      h.w,
-      h.h
-    );
-
-    /* дверь */
-
-    ctx.fillStyle="#171814";
-
-    ctx.fillRect(
-      h.x+h.w/2-18,
-      h.y+h.h-46,
-      36,
-      46
-    );
-
-    /* окна */
-
-    ctx.fillStyle="#1c2420";
-
-    ctx.fillRect(
-      h.x+30,
-      h.y+35,
-      32,
-      28
-    );
-
-    ctx.fillRect(
-      h.x+h.w-62,
-      h.y+35,
-      32,
-      28
-    );
-
-  }
-
-
-  /* СТЕНЫ */
-
-  for(const w of walls){
-
-    ctx.fillStyle="#77705c";
-
-    ctx.fillRect(
-      w.x,
-      w.y,
-      w.w,
-      w.h
-    );
-
-    ctx.strokeStyle="#3c392e";
-
-    ctx.strokeRect(
-      w.x,
-      w.y,
-      w.w,
-      w.h
-    );
-
-  }
-
-
-  /* ТОЧКИ ДВИЖЕНИЯ */
-
-  const selectedSoldier=
-    soldiers[selected];
-
-  if(
-    selectedSoldier &&
-    selectedSoldier.alive
-  ){
-
-    ctx.strokeStyle="#d8c86c";
-
-    ctx.lineWidth=2;
-
-    ctx.setLineDash([
-      7,
-      7
-    ]);
-
-    ctx.beginPath();
-
-    ctx.moveTo(
-      selectedSoldier.x,
-      selectedSoldier.y
-    );
-
-    ctx.lineTo(
-      selectedSoldier.tx,
-      selectedSoldier.ty
-    );
-
-    ctx.stroke();
-
-    ctx.setLineDash([]);
-
-    ctx.beginPath();
-
-    ctx.arc(
-      selectedSoldier.tx,
-      selectedSoldier.ty,
-      9,
-      0,
-      Math.PI*2
-    );
-
-    ctx.stroke();
-
-  }
-
-
-  /* ВРАГИ */
-
-  for(const enemy of enemies){
-
-    if(!enemy.alive)continue;
-
-    ctx.fillStyle="#741f1f";
-
-    ctx.beginPath();
-
-    ctx.arc(
-      enemy.x,
-      enemy.y,
-      15,
-      0,
-      Math.PI*2
-    );
-
-    ctx.fill();
-
-    /* каска */
-
-    ctx.fillStyle="#35221e";
-
-    ctx.beginPath();
-
-    ctx.arc(
-      enemy.x,
-      enemy.y-5,
-      10,
-      Math.PI,
-      0
-    );
-
-    ctx.fill();
-
-    /* здоровье */
-
-    ctx.fillStyle="#401717";
-
-    ctx.fillRect(
-      enemy.x-18,
-      enemy.y-27,
-      36,
-      4
-    );
-
-    ctx.fillStyle="#ae4b43";
-
-    ctx.fillRect(
-      enemy.x-18,
-      enemy.y-27,
-      36*
-      (enemy.hp/enemy.maxHp),
-      4
-    );
-
-  }
-
-
-  /* СОЛДАТЫ */
-
-  soldiers.forEach((s,index)=>{
-
-    if(!s.alive)return;
-
-    ctx.fillStyle=
-      index===selected
-      ? "#d6c35f"
-      : "#71945e";
-
-    ctx.beginPath();
-
-    ctx.arc(
-      s.x,
-      s.y,
-      15,
-      0,
-      Math.PI*2
-    );
-
-    ctx.fill();
-
-    /* каска */
-
-    ctx.fillStyle="#2c3a28";
-
-    ctx.beginPath();
-
-    ctx.arc(
-      s.x,
-      s.y-6,
-      10,
-      Math.PI,
-      0
-    );
-
-    ctx.fill();
-
-    /* укрытие */
-
-    if(s.cover){
-
-      ctx.strokeStyle="#d6c35f";
-
-      ctx.lineWidth=2;
-
-      ctx.beginPath();
-
-      ctx.arc(
-        s.x,
-        s.y,
-        21,
-        0,
-        Math.PI*2
-      );
-
-      ctx.stroke();
-
-    }
-
-    /* здоровье */
-
-    ctx.fillStyle="#391818";
-
-    ctx.fillRect(
-      s.x-20,
-      s.y-29,
-      40,
-      4
-    );
-
-    ctx.fillStyle="#729955";
-
-    ctx.fillRect(
-      s.x-20,
-      s.y-29,
-      40*
-      (s.hp/s.maxHp),
-      4
-    );
-
-    /* имя */
-
-    ctx.fillStyle="#fff";
-
-    ctx.font="bold 11px Arial";
-
-    ctx.textAlign="center";
-
-    ctx.fillText(
-      s.name,
-      s.x,
-      s.y+31
-    );
-
-  });
-
-
-  /* ПУЛИ */
-
-  for(const bullet of bullets){
-
-    ctx.strokeStyle="#e9dc9d";
-
-    ctx.lineWidth=2;
-
-    ctx.beginPath();
-
-    ctx.moveTo(
-      bullet.x,
-      bullet.y
-    );
-
-    ctx.lineTo(
-      bullet.tx,
-      bullet.ty
-    );
-
-    ctx.stroke();
-
-  }
-
-
-  /* ВЗРЫВЫ */
-
-  for(const explosion of explosions){
-
-    const r=
-      explosion.radius;
-
-    ctx.fillStyle=
-      "rgba(220,165,50,.32)";
-
-    ctx.beginPath();
-
-    ctx.arc(
-      explosion.x,
-      explosion.y,
-      r,
-      0,
-      Math.PI*2
-    );
-
-    ctx.fill();
-
-    ctx.strokeStyle="#f1cf73";
-
-    ctx.lineWidth=3;
-
-    ctx.beginPath();
-
-    ctx.arc(
-      explosion.x,
-      explosion.y,
-      r+7,
-      0,
-      Math.PI*2
-    );
-
-    ctx.stroke();
-
-  }
-
-
-  ctx.restore();
-
-}
-
-
-/* =====================================================
-   ПОБЕДА
-===================================================== */
-
-function checkVictory(){
-
-  if(
-    !gameOver &&
-    aliveEnemies().length===0
-  ){
-
-    gameOver=true;
-
-    document.getElementById(
-      "endScreen"
-    ).style.display="flex";
-
-    document.getElementById(
-      "endTitle"
-    ).textContent=
-      "МИССИЯ ЗАВЕРШЕНА";
-
-    document.getElementById(
-      "endText"
-    ).textContent=
-      "Деревня захвачена. Все вражеские подразделения уничтожены.";
-
-  }
-
-}
-
-
-/* =====================================================
-   ПОРАЖЕНИЕ
-===================================================== */
-
-function checkDefeat(){
-
-  if(
-    !gameOver &&
-    aliveSoldiers().length===0
-  ){
-
-    gameOver=true;
-
-    document.getElementById(
-      "endScreen"
-    ).style.display="flex";
-
-    document.getElementById(
-      "endTitle"
-    ).textContent=
-      "ОТРЯД УНИЧТОЖЕН";
-
-    document.getElementById(
-      "endText"
-    ).textContent=
-      "Задание провалено. Попробуйте снова.";
-
-  }
-
-}
-
-
-/* =====================================================
-   ТАЙМЕР
-===================================================== */
-
-function updateTimer(){
-
-  const total=
-    Math.floor(elapsed);
-
-  const minutes=
-    String(
-      Math.floor(total/60)
-    ).padStart(2,"0");
-
-  const seconds=
-    String(
-      total%60
-    ).padStart(2,"0");
-
-  document.getElementById(
-    "timer"
-  ).textContent=
-    minutes+":"+seconds;
-
-}
-
-
-/* =====================================================
-   ПЕРЕЗАПУСК
-===================================================== */
-
-document
-.getElementById("restart")
-.addEventListener(
-  "pointerdown",
-  function(e){
-
-    e.preventDefault();
-
-    location.reload();
-
-  }
-);
-
-
-/* =====================================================
-   КЛАВИАТУРА
-===================================================== */
-
-window.addEventListener(
-  "keydown",
-  function(e){
-
-    if(e.key>="1" && e.key<="6"){
-
-      selectSoldier(
-        Number(e.key)-1
-      );
-
-    }
-
-    if(
-      e.key.toLowerCase()==="q"
-    ){
-
-      setMode("move");
-
-    }
-
-    if(
-      e.key.toLowerCase()==="f"
-    ){
-
-      setMode("fire");
-
-    }
-
-    if(
-      e.key.toLowerCase()==="g"
-    ){
-
-      setMode("grenade");
-
-    }
-
-  }
-);
-
-
-/* =====================================================
-   GAME LOOP
-===================================================== */
-
-function loop(now){
-
-  const dt=
-    Math.min(
-      .05,
-      (now-lastTime)/1000
-    );
-
-  lastTime=now;
-
-  if(!gameOver){
-
-    elapsed+=dt;
-
-    updateSoldiers(dt);
-
-    updateEnemies(dt);
-
-    updateCamera();
-
-    bullets.forEach(
-      b=>b.life-=dt
-    );
-
-    bullets=
-      bullets.filter(
-        b=>b.life>0
-      );
-
-    explosions.forEach(
-      e=>{
-        e.life-=dt;
-        e.radius+=
-          (85-e.radius)*
-          dt*9;
-      }
-    );
-
-    explosions=
-      explosions.filter(
-        e=>e.life>0
-      );
-
-    checkDefeat();
-
-    updateTimer();
-
-    updateSquad();
-
-  }
-
-  draw();
-
-  requestAnimationFrame(loop);
-
-}
-
-
-/* =====================================================
-   START
-===================================================== */
-
-updateSquad();
-
-setTimeout(()=>{
-
-  document
-    .getElementById("hint")
-    .classList.add("hide");
-
-},5000);
-
-requestAnimationFrame(loop);
+renderScene(scene1);
 
 </script>
 
